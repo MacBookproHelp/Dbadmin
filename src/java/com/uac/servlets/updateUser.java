@@ -34,7 +34,7 @@ public class updateUser extends HttpServlet {
         String lastname = request.getParameter("lastname");
         String regemail = request.getParameter("email");
         
-        String url = "jdbc:derby://localhost:1527/gnMaster;user=test;password=test";
+        String url = "jdbc:derby://localhost:1527/graphnet;user=test;password=test";
         String query = "UPDATE UACUSER SET firstname=?, lastname=?, email=? WHERE username=?";
        
         Connection con = DriverManager.getConnection(url);

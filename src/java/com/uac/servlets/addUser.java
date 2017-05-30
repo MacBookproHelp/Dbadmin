@@ -35,7 +35,7 @@ public class addUser extends HttpServlet {
         String lastname = request.getParameter("lastname");
         String regemail = request.getParameter("regemail");
         
-        String url = "jdbc:derby://localhost:1527/gnMaster;user=test;password=test";
+        String url = "jdbc:derby://localhost:1527/graphnet;user=test;password=test";
         String query = "INSERT INTO UACUSER (username,password,firstname, lastname,email) VALUES (?,?,?,?,?)";
        
         Connection con = DriverManager.getConnection(url);

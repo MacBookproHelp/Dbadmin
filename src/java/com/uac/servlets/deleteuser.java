@@ -29,7 +29,7 @@ public class deleteuser extends HttpServlet {
         
          int a;
         Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-        conn = DriverManager.getConnection("jdbc:derby://localhost:1527/gnMaster;user=test;password=test");
+        conn = DriverManager.getConnection("jdbc:derby://localhost:1527/graphnet;user=test;password=test");
         
         HttpSession session = request.getSession();
         
