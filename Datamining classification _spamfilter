@@ -1,0 +1,125 @@
+#use jupyter notebook to run this script
+
+
+import nltk
+#nltk.download()
+import nltk.classify.util
+from nltk.classify import NaiveBayesClassifier
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import os
+import random
+import os
+
+#Location of the root directory
+root_dir='/Users/kj/Downloads/Dm/assign2/data 2'
+
+
+#iterate through the files 
+def getFiles(folder):
+    ret = []
+    for dirpath, dirnames, filenames in os.walk(folder):
+        for filename in [f for f in filenames if f.endswith(".txt")]:
+            ret.append(os.path.join(dirpath, filename))
+    return ret
+
+
+ham_list = []
+spam_list = []
+
+#train:spam+ham
+#importing only the spam folder
+for filename in getFiles(root_dir+"/spam"):
+    with open(filename, encoding="latin-1") as fp:
+        data = fp.read()
+        spam_list.append(data)
+
+#importing only the users folder
+for filename in getFiles(root_dir+"/user1"):
+    with open(filename, encoding="latin-1") as fp:
+        data = fp.read()
+        ham_list.append(data)
+
+
+def create_word_features(words):
+    my_dict = dict( [ (word, True) for word in words] )
+    return my_dict
+
+
+ham_list  = []
+spam_list = []
+
+#print(ham_list)
+# Same as before, but this time:
+
+# 1. Break the sentences into words using word_tokenize
+# 2. Use the create_word_features() function
+# 3. Splitting the inbox folder and joining all the inbox from users(1-10) and deleted the users from(10-20) which is explained in report.
+for directories, subdirs, files in os.walk(root_dir):
+    if (os.path.split(directories)[1]  == 'inbox'):
+        for filename in files:
+            #to process all files without triggering any exception latin-1 is used
+            with open(os.path.join(directories, filename), encoding="latin-1") as f:
+                data = f.read()
+                #breaking the string into words
+                words = word_tokenize(data)
+                #passing in the classifier as ham
+                ham_list.append((create_word_features(words), "ham"))
+
+
+for directories, subdirs, files in os.walk(root_dir):
+    if (os.path.split(directories)[1]  == 'spam'):
+        for filename in files:      
+            with open(os.path.join(directories, filename), encoding="latin-1") as f:
+                data = f.read()
+                
+                # The data we read is one big string. We need to break it into words.
+                words = word_tokenize(data)
+                #passing in the classifier as spam
+                spam_list.append((create_word_features(words), "spam"))
+
+print(ham_list[0])
+print(spam_list[0])
+
+
+combined_list = ham_list + spam_list
+#print(len(combined_list))
+
+#to avoid ham first and spam second, we shuffle
+random.shuffle(combined_list)
+
+#training % given better train more and test less %
+training_part = int(len(combined_list) * 0.87)
+
+print(len(combined_list))
+
+training_set = combined_list[:training_part]
+
+test_set =  combined_list[training_part:]
+
+print (len(training_set))
+print (len(test_set))
+
+
+classifier = NaiveBayesClassifier.train(training_set)
+
+# Find the accuracy, using the test data
+
+accuracy = nltk.classify.util.accuracy(classifier, test_set)
+
+print("Accuracy is: ", accuracy * 100)
+
+classifier.show_most_informative_features(50)
+
+
+msg = '''As one of our top customers we are providing 10% OFF the total of your next used book purchase from www.letthestoriesliveon.com. Please use the promotional code, TOPTENOFF at checkout. Limited to 1 use per customer. All books have free shipping within the contiguous 48 United States and there is no minimum purchase.
+ 
+We have millions of used books in stock that are up to 90% off MRSP and add tens of thousands of new items every day. Don’t forget to check back frequently for new arrivals.'''
+ 
+ 
+words = word_tokenize(msg)
+features = create_word_features(words)
+
+
+print("Message  is :" ,classifier.classify(features))
+ 
